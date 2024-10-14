@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <title>Weather app</title>
+ <style>
+    *{
+        padding:0;
+        margin:0;
+        box-sizing:border-box;
+    }
+    
+    body{
+    display:flex;
+    flex-direction:column;
+        min-height:100vh;
+        background:repeating-linear-gradient(-40deg,#358 10%,#777 10%,#200 70%);
+        background-attachment:fixed;
+    }
+    
+   .container{
+   margin-top:11vh;
+       width:80%;
+       position:relative;
+       left:10%;
+       padding:10px;
+       border-radius:10px;
+       border:2px solid white;
+    box-shadow:0 0 10px pink inset;
+
+   }
+   h3{
+   padding:10px;
+   text-align:center;
+   color:yellow;
+   text-shadow:0 0 5px black;
+   }
+   
+   input[type="text"]{
+       width:70%;
+       border:none;
+       outline:none;
+       padding:10px;
+       border-radius:10px;
+      position:relative;
+      left:15%;
+      text-align:center;
+      margin-top:10px;
+   }
+   
+   input:focus{
+       background:lightgrey;
+   }
+   
+   button{
+       width:150px;
+       height:30px;
+       border:none;
+       border-radius:10px;
+       background:#0076ff;
+       color:white;
+       font-size:16px;
+     position:relative;
+      left:calc(50% - 75px) ;
+      top:10px;
+   }
+   
+   .info{
+       width:90%;
+       min-height:80px;
+       border:2px solid yellow;
+       position:relative;
+       left:5%;
+       margin-top:15px;
+       border-radius:7px;
+       box-shadow:0 0 10px white;
+       display:flex;
+       justify-content:center;
+       align-items:center;
+    color:white;
+    padding:10px;
+   }
+   
+   footer{
+   width:100%;
+       min-height:10vh;
+       background:#488;
+       text-align:center;
+   bottom:0;
+    margin-top:20px;
+   }
+   
+   header{
+       position:fixed;
+       width:100%;
+       height:10vh;
+       background:#333;
+       color:white;
+       z-index:3;
+   }
+   
+   .logo{
+       height:90%;
+       aspect-ratio:1;
+       border:2px solid white;
+       border-radius:50%;
+       position:absolute;
+       top:5%;
+       left:20px;
+       display:flex;
+       justify-content:center;
+       align-items:center;
+       font-size:2.2em;
+       background:green;
+   }
+   
+   h1{
+       position:fixed;
+       right:15px;
+       top:10px;
+       z-index:4;
+       color:white;
+   }
+   
+   h1:active{
+       transform:scale(0.96);
+      color:yellow;
+   }
+   
+   nav{
+       width:40vw;
+       height:60vh;
+       background:#5588ff;
+       position:fixed;
+       left:-50vh;
+       top:10vh;
+       transition:all 1s;
+       z-index:5;
+       border-radius:0 10px 10px 0;
+   }
+   
+   h1:hover + nav{
+       left:0;
+       background:black
+   }
+   
+   .navs{
+       background:none;
+   }
+   
+   .navs a{
+       text-decoration:none;
+       color:white;
+       padding:10px;
+       background:#466;
+       border-radius:10px;
+   }
+ </style>
+    </head>
+    <body>
+    <header>
+        <h3>Weather Information</h3>
+    <div class="logo">
+      GL
+    </div>
+    
+    </header>
+    
+    
+    
+    
+    <h1>&#9776</h1>
+    
+    <nav>
+    <button class="navs"><a href="die.html">Open Die Game</a></button>
+    </nav>
+    
+    
+    
+      <div class="container">
+      <h3>Cities Weather Information</h3>
+      
+   <input type="text" id="cityname" placeholder="type city name">
+   <button onclick="request()">Send Request</button>
+   
+   <div class="info result"></div>
+   <div class="info long"></div>
+   <div class="info lat"></div>
+   <div class="info current-w"></div>
+   <div class="info temp"></div>
+      </div>
+      <footer>
+    <h4>Designed and developed by Galata</h4>
+    <h4>All Right Resrved &copy;</h4>
+    <p>contact via: +251947284124</p>
+      </footer>
+      
+      <script>
+    //global declaration
+    
+    let city=document.querySelector("#cityname");
+    let fetchState=document.querySelector(".result");
+    let longitudeHolder=document.querySelector (".long");
+    let latitudeHolder=document.querySelector (".lat");
+    let stateHolder=document.querySelector(".current-w");
+    let tempHolder= document.querySelector (".temp")
+    
+    
+    //value taker
+    
+    let longitude;
+    let latitude;
+    let weather;
+    let temp;
+    
+    
+    //work on api
+    
+    function request(){
+    let cityName=city.value.trim();
+    
+    if(cityName.includes(" ")){
+        cityName = cityName.replace(/["\"]/g,'+');
+    }
+    if(cityName==""){
+        fetchState.innerHTML="Please insert city name first";
+        longitudeHolder.innerHTML="";
+    latitudeHolder.innerHTML ="";
+    tempHolder.innerHTML="";
+    stateHolder.innerHTML="";
+        return;
+    }
+        const apiId='0e92453e73471c1bc7e5a6b253f68501';
+
+ const urlLink='https://api.openweathermap.org/data/2.5/weather?q='+cityName+'&appid='+apiId;
+
+function fechData(url){
+  return new Promise((resolve,reject)=>{
+  
+  fetchState.innerHTML="LOADING...";
+  
+    fetch(url).then(response=>{
+      if(!response.ok){
+      
+      reject('couldn\'t reach');
+   
+      }
+      else{
+  return response.json();
+    }
+    
+    }).then(data=>{
+        resolve(JSON.stringify(data,null,4));
+        
+        //initialization
+        
+      longitude=data.coord.lon;
+      latitude=data.coord.lat;
+      weather = data.weather[0].description;
+      temp= data.main.temp - 273.1;
+      
+    }).catch(err=>{
+        reject(err)
+    })
+  })
+}
+
+ async function dataHandleAndFetch(url){
+     try{
+    const data= await fechData(url);
+    //passing result
+    fetchState.innerHTML ="<p>Successfully gathered weather information in <mark>"+city.value+".<mark/><p/>";
+    longitudeHolder.innerHTML="longitude= "+longitude;
+    latitudeHolder.innerHTML="latitude= "+latitude;
+  stateHolder.innerHTML="Current weather= "+weather;
+  
+  tempHolder.innerHTML="Current tempreture= "+temp.toFixed(2)+"&deg;C";
+  city.value="";
+     }
+     catch(error){
+       fetchState.innerHTML="<p>Failed to gather weather information in <mark>"+city.value+"<mark/>.<br> Please make sure city Name<p/>";
+    longitudeHolder.innerHTML="";
+    latitudeHolder.innerHTML ="";
+    tempHolder.innerHTML="";
+    stateHolder.innerHTML="";
+    city.value="";
+     }
+ }
+
+  dataHandleAndFetch (urlLink);
+  
+    }
+    
+    
+      </script>
+    </body>
+</html>
